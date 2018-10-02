@@ -6,19 +6,24 @@
 </head>
 
 <body>
-    <% include partials/_header %>
-  <table>
-    <% for (let url in urls){ %>
-    <tr>
-      <td>
-        <%= urls[url] %>
-      </td>
-      <td>
-        <%= url %>
-      </td>
-    </tr>
-    <% }; %>
-  </table>
+  <% include partials/_header %>
+  <form method="POST" action="/urls/9sm5xK/delete">
+    <table>
+      <% for (let url in urls){ %>
+      <tr>
+        <td>
+          <%= urls[url] %>
+        </td>
+        <td>
+          <%= url %>
+        </td>
+        <td>
+          <input id="<%= url %>" name="<%= url %>" type="submit" value="delete" />
+        </td>
+      </tr>
+      <% }; %>
+    </table>
+  </form>
   <a href="#">Shorten your URL!</a>
 </body>
 

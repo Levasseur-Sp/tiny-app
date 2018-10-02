@@ -2,7 +2,7 @@
 const express = require('express');
 const bodyParser = require("body-parser");
 
-const PORT = 8080;
+const PORT = 8000;
 
 // Setting up the express server
 const app = express();
@@ -54,10 +54,16 @@ app.get("/u/:shortURL", (req, res) => {
 // Takes in the new Url to shorten and adds it to the 'database'
 app.post('/urls/', (req, res) => {
   let shortURL = generateRandomString(6);
-  res.redirect(`/urls/${shortURL}`)
+  res.redirect(`/urls/${shortURL}`);
   urlDatabase[shortURL] = req.body.longURL;
   res.send(urlDatabase);
 });
+
+app.post('/urls/:id/delete', (req, res) => {
+  delete urlDatabase[req.params.id];
+  res.redirect(`/urls/`);
+});
+
 
 // Surveying the express server
 app.listen(PORT, () => {
