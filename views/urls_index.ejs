@@ -7,9 +7,9 @@
 
 <body>
   <% include partials/_header %>
-  <form method="POST" action="/urls/9sm5xK/delete">
+  <% for (let url in urls){ %>
+  <form method="POST" action="/urls/<%= url %>/delete">
     <table>
-      <% for (let url in urls){ %>
       <tr>
         <td>
           <%= urls[url] %>
@@ -21,9 +21,9 @@
           <input id="<%= url %>" name="<%= url %>" type="submit" value="delete" />
         </td>
       </tr>
-      <% }; %>
     </table>
   </form>
+  <% }; %>
   <a href="#">Shorten your URL!</a>
 </body>
 
