@@ -6,10 +6,16 @@
 </head>
 
 <body>
+    <% include partials/_header %>
   <table>
     <% for (let url in urls){ %>
     <tr>
-      <td> <%= urls[url] %> </td> <td> <%= url %> </td>
+      <td>
+        <%= urls[url] %>
+      </td>
+      <td>
+        <%= url %>
+      </td>
     </tr>
     <% }; %>
   </table>
