@@ -46,20 +46,18 @@ app.get('/urls/:id', (req, res) => {
   });
 });
 
+app.get("/u/:shortURL", (req, res) => {
+  let longURL = urlDatabase[req.params.shortURL];
+  res.redirect(longURL);
+});
+
+// Takes in the new Url to shorten and adds it to the 'database'
 app.post('/urls/', (req, res) => {
   let shortURL = generateRandomString(6);
   res.redirect(`/urls/${shortURL}`)
   urlDatabase[shortURL] = req.body.longURL;
   res.send(urlDatabase);
 });
-
-// app.get('/urls.json', (req, res) => {
-//   res.json(urlDatabase);
-// });
-
-// app.get("/hello", (req, res) => {
-//   res.send("<html><body>Hello <b>World</b></body></html>\n");
-// });
 
 // Surveying the express server
 app.listen(PORT, () => {
