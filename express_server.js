@@ -52,7 +52,7 @@ app.get("/u/:shortURL", (req, res) => {
 });
 
 // Takes in the new Url to shorten and adds it to the 'database'
-app.post('/urls', (req, res) => {
+app.post('/urls/', (req, res) => {
   let shortURL = generateRandomString(6);
   res.redirect(`/urls/${shortURL}`);
   urlDatabase[shortURL] = req.body.longURL;
@@ -60,15 +60,12 @@ app.post('/urls', (req, res) => {
 
 app.post('/urls/:id/delete', (req, res) => {
   delete urlDatabase[req.params.id];
-  res.redirect(`/urls/`);
+  res.redirect('/urls/');
 });
 
-app.post('/urls/:id', (req, res) => {
+app.post('/urls/:id/update', (req, res) => {
   urlDatabase[req.params.id] = req.body.longURL;
-  res.render("urls_show", {
-    shortURL: req.params.id,
-    urls: urlDatabase
-  });
+  res.redirect('/urls/')
 });
 
 

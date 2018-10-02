@@ -1,13 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<head>
-  <title>TinyApp</title>
-</head>
+<% include partials/_head%>
 
 <body>
   <% include partials/_header %>
-  <form method="POST" action="/urls/<%= shortURL %>">
+  <form method="POST" action="/urls/<%= shortURL %>/update">
     <table>
       <tr>
         <td>
@@ -24,7 +22,7 @@
         </td>
       </tr>
     </table>
-    <a href="#">Shorten your URL!</a>
+    <% include partials/_footer %>
   </form>
 </body>
 
