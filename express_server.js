@@ -4,11 +4,24 @@ const bodyParser = require("body-parser");
 
 const PORT = 8080;
 
-//cSetting up the express server
+// Setting up the express server
 const app = express();
 app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({ extended: true }));
 
+// Generates a URL of 6 randomized characters with each character's being one of 62 possibilities
+  // 56'800'235'584 possibilities
+function generateRandomString() {
+  const possibleChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+  const lengthURL = 6;
+  let randomURL = "";
+  for (var i = 0; i < lengthURL; i++) {
+    randomURL += possibleChars.charAt(Math.round(Math.random() * possibleChars.length));
+  }
+  return randomURL;
+}
+
+// MAIN
 let urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
