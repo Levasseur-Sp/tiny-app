@@ -11,12 +11,11 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 // Generates a URL of 6 randomized characters with each character's being one of 62 possibilities
   // 56'800'235'584 possibilities
-function generateRandomString() {
+function generateRandomString(lengthURL) {
   const possibleChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
-  const lengthURL = 6;
   let randomURL = "";
   for (var i = 0; i < lengthURL; i++) {
-    randomURL += possibleChars.charAt(Math.round(Math.random() * possibleChars.length));
+    randomURL += possibleChars.charAt(Math.round(Math.random() * possibleChars.length) + 1);
   }
   return randomURL;
 }
@@ -47,9 +46,11 @@ app.get('/urls/:id', (req, res) => {
   });
 });
 
-app.post("/urls", (req, res) => {
-  console.log(req.body);  // debug statement to see POST parameters
-  res.send("Ok");         // Respond with 'Ok' (we will replace this)
+app.post('/urls/', (req, res) => {
+  let shortURL = generateRandomString(6);
+  res.redirect(`/urls/${shortURL}`)
+  urlDatabase[shortURL] = req.body.longURL;
+  res.send(urlDatabase);
 });
 
 // app.get('/urls.json', (req, res) => {
