@@ -6,18 +6,26 @@
 </head>
 
 <body>
-    <% include partials/_header %>
-  <table>
-    <tr>
-      <td>
-        <%= urls[shortURL] %>
-      </td>
-      <td>
-        <%= shortURL %>
-      </td>
-    </tr>
-  </table>
-  <a href="#">Shorten your URL!</a>
+  <% include partials/_header %>
+  <form method="POST" action="/urls/<%= shortURL %>">
+    <table>
+      <tr>
+        <td>
+          Short link:
+          <%= shortURL %>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <input type="text" name="longURL" value="<%= urls[shortURL] %>">
+        </td>
+        <td>
+          <input id="<%= shortURL %>" name="<%= shortURL %>" type="submit" value="Update" />
+        </td>
+      </tr>
+    </table>
+    <a href="#">Shorten your URL!</a>
+  </form>
 </body>
 
 </html>
