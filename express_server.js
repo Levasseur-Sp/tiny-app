@@ -42,7 +42,7 @@ const users = {
   }
 };
 
-// GET Requests
+// URLs functionnality
 app.get('/', (req, res) => {
   res.send('Hello!');
   res.render('/partials/_footer');
@@ -53,6 +53,12 @@ app.get('/urls', (req, res) => {
     urls: urlDatabase,
     user_id: users[req.cookies["user_id"]]
   });
+});
+
+app.post('/urls', (req, res) => {
+  let shortURL = generateRandomString(6);
+  res.redirect(`/urls/${shortURL}`);
+  urlDatabase[shortURL] = req.body.longURL;
 });
 
 app.get("/urls/new", (req, res) => {
@@ -70,26 +76,6 @@ app.get('/urls/:id', (req, res) => {
   });
 });
 
-app.get("/u/:shortURL", (req, res) => {
-  let longURL = urlDatabase[req.params.shortURL];
-  res.redirect(longURL);
-});
-
-app.get("/user/register", (req, res) => {
-  res.render("user_register");
-});
-
-app.get('/user/login', (req, res) => {
-  res.render("user_login")
-});
-
-// POST Requests
-app.post('/urls', (req, res) => {
-  let shortURL = generateRandomString(6);
-  res.redirect(`/urls/${shortURL}`);
-  urlDatabase[shortURL] = req.body.longURL;
-});
-
 app.post('/urls/:id/delete', (req, res) => {
   delete urlDatabase[req.params.id];
   res.redirect('/urls');
@@ -100,24 +86,15 @@ app.post('/urls/:id/update', (req, res) => {
   res.redirect('/urls')
 });
 
-app.post('/user/login', (req, res) => {
-  for (const user in users) {
-    let email = users[user].email; let password = users[user].password;
-    if (req.body.email == email && req.body.password == password) {
-      res.cookie('user_id', user);
-      res.redirect('/urls');
-    }
-  }
-  if (!req.cookies['user_id']) {
-    res.statusCode = 403;
-    res.end("Incorrect email or password");
-  }
+// Accessing the longURL of the shortURL
+app.get("/u/:shortURL", (req, res) => {
+  let longURL = urlDatabase[req.params.shortURL];
+  res.redirect(longURL);
 });
 
-app.post('/user/logout', (req, res) => {
-  res.clearCookie('user_id');
-  res.clearCookie('password');
-  res.redirect(`/urls`);
+// Users registration, login and logout
+app.get("/user/register", (req, res) => {
+  res.render("user_register");
 });
 
 app.post('/user/register', (req, res) => {
@@ -146,6 +123,30 @@ app.post('/user/register', (req, res) => {
   // res.cookie('password', req.body.password, { secure: true });
 
   res.redirect('/urls');
+});
+
+app.get('/user/login', (req, res) => {
+  res.render("user_login")
+});
+
+app.post('/user/login', (req, res) => {
+  for (const user in users) {
+    let email = users[user].email; let password = users[user].password;
+    if (req.body.email == email && req.body.password == password) {
+      res.cookie('user_id', user);
+      res.redirect('/urls');
+    }
+  }
+  if (!req.cookies['user_id']) {
+    res.statusCode = 403;
+    res.end("Incorrect email or password");
+  }
+});
+
+app.post('/user/logout', (req, res) => {
+  res.clearCookie('user_id');
+  res.clearCookie('password');
+  res.redirect(`/urls`);
 });
 
 // Surveying the express server
