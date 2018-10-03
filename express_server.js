@@ -18,15 +18,31 @@ function generateRandomString(lengthURL) {
   const possibleChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
   let randomURL = "";
   for (var i = 0; i < lengthURL; i++) {
-    randomURL += possibleChars.charAt(Math.round(Math.random() * possibleChars.length) + 1);
+    console.log(i);
+    randomURL += possibleChars.charAt(Math.floor(Math.random() * possibleChars.length));
   }
   return randomURL;
 }
 
-// MAIN
-let urlDatabase = {
+// 'Databases'
+const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
+};
+
+const users = {
+  "TnyAppBot": {
+    id: "TnyAppBot",
+    username: "TinyAppBot",
+    email: "TinyAppBot@TinyApp.ca",
+    password: "12345qwertySuperSecure"
+  },
+  "c6ioN2fe0": {
+    id: "c6ioN2",
+    username: "CelineD",
+    email: "user2@example.com",
+    password: "dishwasher-funk"
+  }
 };
 
 // GET Requests
@@ -35,17 +51,17 @@ app.get('/', (req, res) => {
   res.render('/partials/_footer');
 });
 
-app.get('/urls/', (req, res) => {
+app.get('/urls', (req, res) => {
   res.render("urls_index", {
     urls: urlDatabase,
-    username: req.cookies["user_name"]
+    username: req.cookies["username"]
   });
 });
 
 app.get("/urls/new", (req, res) => {
   res.render("urls_new", {
     urls: urlDatabase,
-    username: req.cookies["user_name"]
+    username: req.cookies["username"]
   });
 });
 
@@ -53,7 +69,7 @@ app.get('/urls/:id', (req, res) => {
   res.render("urls_show", {
     shortURL: req.params.id,
     urls: urlDatabase,
-    username: req.cookies["user_name"]
+    username: req.cookies["username"]
   });
 });
 
@@ -64,12 +80,12 @@ app.get("/u/:shortURL", (req, res) => {
 
 app.get("/user/register", (req, res) => {
   res.render("user_register", {
-    username: req.cookies["user_name"]
+    username: req.cookies["username"]
   });
 });
 
 // POST Requests
-app.post('/urls/', (req, res) => {
+app.post('/urls', (req, res) => {
   let shortURL = generateRandomString(6);
   res.redirect(`/urls/${shortURL}`);
   urlDatabase[shortURL] = req.body.longURL;
@@ -77,28 +93,40 @@ app.post('/urls/', (req, res) => {
 
 app.post('/urls/:id/delete', (req, res) => {
   delete urlDatabase[req.params.id];
-  res.redirect('/urls/');
+  res.redirect('/urls');
 });
 
 app.post('/urls/:id/update', (req, res) => {
   urlDatabase[req.params.id] = req.body.longURL;
-  res.redirect('/urls/')
+  res.redirect('/urls')
 });
 
 app.post('/user/login', (req, res) => {
-  res.cookie('user_name', req.body.username);
-  res.redirect('/urls/');
+  res.cookie('username', req.body.username);
+  res.redirect('/urls');
 });
 
 app.post('/user/logout', (req, res) => {
-  res.clearCookie('user_name');
+  res.clearCookie('username');
   res.redirect(`/urls`);
 });
 
 app.post('/user/register', (req, res) => {
-  res.cookie('user_name', req.body.email);
+  console.log(users);
+  let userId = generateRandomString(9);
+
+  users[userId] = {
+    id: userId,
+    username: req.body.username,
+    email: req.body.email,
+    password: req.body.password
+  }
+  
+  res.cookie('username', req.body.username);
+  res.cookie('email', req.body.email);
   res.cookie('password', req.body.password, { secure: true });
-  res.redirect('/urls/');
+
+  res.redirect('/urls');
 });
 
 // Surveying the express server
