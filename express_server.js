@@ -68,18 +68,18 @@ app.get('/urls', (req, res) => {
 app.post('/urls', (req, res) => {
   let shortURL = generateRandomString(6);
   res.redirect(`/urls/${shortURL}`);
-  urlDatabase[shortURL] = req.body.longURL;
+  urlDatabase[shortURL].longURL = req.body.longURL;
 });
 
 app.get("/urls/new", (req, res) => {
-  res.render("urls_new", {
+  res.render("url_new", {
     urls: urlDatabase,
     user_id: users[req.cookies["user_id"]]
   });
 });
 
 app.get('/urls/:id', (req, res) => {
-  res.render("urls_show", {
+  res.render("url_show", {
     shortURL: req.params.id,
     urls: urlDatabase,
     user_id: users[req.cookies["user_id"]]
@@ -92,13 +92,13 @@ app.post('/urls/:id/delete', (req, res) => {
 });
 
 app.post('/urls/:id/update', (req, res) => {
-  urlDatabase[req.params.id] = req.body.longURL;
+  urlDatabase[req.params.id].longURL = req.body.longURL;
   res.redirect('/urls')
 });
 
 // Accessing the longURL of the shortURL
 app.get("/u/:shortURL", (req, res) => {
-  let longURL = urlDatabase[req.params.shortURL];
+  let longURL = urlDatabase[req.params.shortURL].longURL;
   res.redirect(longURL);
 });
 
