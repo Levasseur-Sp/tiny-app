@@ -12,13 +12,12 @@ app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-// Generates a URL of 6 randomized characters with each character's being one of 62 possibilities
-// 56'800'235'584 possibilities
+// Generates a URL of lengthURL length with each character being one of 62 possibilities
+// 6 random characters = 56'800'235'584 possibilities
 function generateRandomString(lengthURL) {
   const possibleChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
   let randomURL = "";
   for (var i = 0; i < lengthURL; i++) {
-    console.log(i);
     randomURL += possibleChars.charAt(Math.floor(Math.random() * possibleChars.length));
   }
   return randomURL;
@@ -32,14 +31,12 @@ const urlDatabase = {
 
 const users = {
   "TnyAppBot": {
-    id: "TnyAppBot",
-    username: "TinyAppBot",
+    username: "TinyBot",
     email: "TinyAppBot@TinyApp.ca",
     password: "12345qwertySuperSecure"
   },
   "c6ioN2fe0": {
-    id: "c6ioN2",
-    username: "CelineD",
+    username: "Heretic Suzan",
     email: "user2@example.com",
     password: "dishwasher-funk"
   }
@@ -54,14 +51,14 @@ app.get('/', (req, res) => {
 app.get('/urls', (req, res) => {
   res.render("urls_index", {
     urls: urlDatabase,
-    username: req.cookies["username"]
+    user_id: users[req.cookies["user_id"]]
   });
 });
 
 app.get("/urls/new", (req, res) => {
   res.render("urls_new", {
     urls: urlDatabase,
-    username: req.cookies["username"]
+    user_id: users[req.cookies["user_id"]]
   });
 });
 
@@ -69,7 +66,7 @@ app.get('/urls/:id', (req, res) => {
   res.render("urls_show", {
     shortURL: req.params.id,
     urls: urlDatabase,
-    username: req.cookies["username"]
+    user_id: users[req.cookies["user_id"]]
   });
 });
 
@@ -79,9 +76,11 @@ app.get("/u/:shortURL", (req, res) => {
 });
 
 app.get("/user/register", (req, res) => {
-  res.render("user_register", {
-    username: req.cookies["username"]
-  });
+  res.render("user_register");
+});
+
+app.get('/user/login', (req, res) => {
+  res.render("user_login")
 });
 
 // POST Requests
@@ -102,29 +101,33 @@ app.post('/urls/:id/update', (req, res) => {
 });
 
 app.post('/user/login', (req, res) => {
-  res.cookie('username', req.body.username);
   res.redirect('/urls');
 });
 
 app.post('/user/logout', (req, res) => {
-  res.clearCookie('username');
+  res.clearCookie('user_id');
+  res.clearCookie('password');
   res.redirect(`/urls`);
 });
 
 app.post('/user/register', (req, res) => {
-  console.log(users);
-  let userId = generateRandomString(9);
+  if (!req.body.email || !req.body.password) res.statusCode = 400, res.send('Email or password missing for the registration');
+  for (const user in users) {
+    let email = users[user].email;
+    if (req.body.email == email) res.statusCode = 400, res.send('The email is already associated with an account');
+  }
 
+
+  let userId = generateRandomString(9);
   users[userId] = {
-    id: userId,
     username: req.body.username,
     email: req.body.email,
     password: req.body.password
   }
-  
-  res.cookie('username', req.body.username);
-  res.cookie('email', req.body.email);
+
+  res.cookie('user_id', userId);
   res.cookie('password', req.body.password, { secure: true });
+
 
   res.redirect('/urls');
 });
