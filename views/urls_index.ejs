@@ -5,22 +5,35 @@
 
 <body>
   <% include partials/_header %>
-  <% for (let url in urls){ %>
-  <form method="POST" action="/urls/<%= url %>/delete">
-    <table>
-      <tr>
-        <td>
-          <%= url %>
-        </td>
-        <td>
-          <%= urls[url] %>
-        </td>
-        <td>
-          <input id="<%= url %>" name="<%= url %>" type="submit" value="delete" />
-        </td>
-      </tr>
-    </table>
-  </form>
+  <% for (let shortURL in urls){ %>
+
+
+  <table>
+    <tr>
+      <td>
+        <%= shortURL %>
+      </td>
+      <td>
+        <%= urls[shortURL] %>
+      </td>
+      <td>
+        <table>
+          <tr>
+            <form method="POST" action="/urls/<%= shortURL %>/delete">
+              <td>
+                <input id="<%= shortURL %>" name="<%= shortURL %>" type="submit" value="Delete" />
+              </td>
+            </form>
+          </tr>
+          <form method="GET" action="/urls/<%= shortURL %>">
+            <tr>
+              <input id="<%= shortURL %>" name="<%= shortURL %>" type="submit" value="Update" />
+            </tr>
+          </form>
+        </table>
+      </td>
+    </tr>
+  </table>
   <% }; %>
   <% include partials/_footer %>
 </body>
