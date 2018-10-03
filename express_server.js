@@ -35,7 +35,7 @@ app.get('/', (req, res) => {
   res.render('/partials/_footer');
 });
 
-app.get('/urls', (req, res) => {
+app.get('/urls/', (req, res) => {
   res.render("urls_index", {
     urls: urlDatabase,
     username: req.cookies["user_name"]
@@ -43,7 +43,10 @@ app.get('/urls', (req, res) => {
 });
 
 app.get("/urls/new", (req, res) => {
-  res.render("urls_new");
+  res.render("urls_new", {
+    urls: urlDatabase,
+    username: req.cookies["user_name"]
+  });
 });
 
 app.get('/urls/:id', (req, res) => {
@@ -78,9 +81,7 @@ app.post('/urls/:id/update', (req, res) => {
 
 app.post('/user/login', (req, res) => {
   res.cookie('user_name', req.body.username);
-  res.render('user_login', {
-    username: req.cookies["user_name"]
-  });
+  res.redirect('/urls/');
 });
 
 app.post('/user/logout', (req, res) => {
