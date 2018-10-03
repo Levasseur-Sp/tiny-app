@@ -4,7 +4,7 @@ const bodyParser = require("body-parser");
 const cookieParser = require('cookie-parser');
 
 
-const PORT = 8000;
+const PORT = 8080;
 
 // Setting up the express server
 const app = express();
@@ -101,7 +101,17 @@ app.post('/urls/:id/update', (req, res) => {
 });
 
 app.post('/user/login', (req, res) => {
-  res.redirect('/urls');
+  for (const user in users) {
+    let email = users[user].email; let password = users[user].password;
+    if (req.body.email == email && req.body.password == password) {
+      res.cookie('user_id', user);
+      res.redirect('/urls');
+    }
+  }
+  if (!req.cookies['user_id']) {
+    res.statusCode = 403;
+    res.end("Incorrect email or password");
+  }
 });
 
 app.post('/user/logout', (req, res) => {
@@ -111,10 +121,17 @@ app.post('/user/logout', (req, res) => {
 });
 
 app.post('/user/register', (req, res) => {
-  if (!req.body.email || !req.body.password) res.statusCode = 400, res.send('Email or password missing for the registration');
+  if (!req.body.email || !req.body.password || !req.body.username) {
+    res.statusCode = 400;
+    res.end('Email, username or password missing for the registration');
+  }
+
   for (const user in users) {
     let email = users[user].email;
-    if (req.body.email == email) res.statusCode = 400, res.send('The email is already associated with an account');
+    if (req.body.email == email) {
+      res.statusCode = 400;
+      res.end('The email is already associated with an account');
+    }
   }
 
 
@@ -126,8 +143,7 @@ app.post('/user/register', (req, res) => {
   }
 
   res.cookie('user_id', userId);
-  res.cookie('password', req.body.password, { secure: true });
-
+  // res.cookie('password', req.body.password, { secure: true });
 
   res.redirect('/urls');
 });
