@@ -25,8 +25,18 @@ function generateRandomString(lengthURL) {
 
 // 'Databases'
 const urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
+  "b2xVn2": {
+    longURL: "http://www.lighthouselabs.ca",
+    urlOwner: "TinyAppBot"
+  },
+  "9sm5xK": {
+    longURL: "http://www.google.com",
+    urlOwner: "TinyAppBot"
+  },
+  "i8Dut3": {
+    longURL: "http://www.google.com",
+    urlOwner: "c6ioN2fe0"
+  }
 };
 
 const users = {
