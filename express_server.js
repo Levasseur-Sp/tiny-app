@@ -62,6 +62,12 @@ app.get("/u/:shortURL", (req, res) => {
   res.redirect(longURL);
 });
 
+app.get("/user/register", (req, res) => {
+  res.render("user_register", {
+    username: req.cookies["user_name"]
+  });
+});
+
 // POST Requests
 app.post('/urls/', (req, res) => {
   let shortURL = generateRandomString(6);
@@ -87,6 +93,12 @@ app.post('/user/login', (req, res) => {
 app.post('/user/logout', (req, res) => {
   res.clearCookie('user_name');
   res.redirect(`/urls`);
+});
+
+app.post('/user/register', (req, res) => {
+  res.cookie('user_name', req.body.email);
+  res.cookie('password', req.body.password, { secure: true });
+  res.redirect('/urls/');
 });
 
 // Surveying the express server

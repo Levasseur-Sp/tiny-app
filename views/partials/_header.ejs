@@ -1,14 +1,24 @@
 <header>
   <% if ( username ) {%>
-  Loged in: <input readonly="true" name="logInUserName" value="<%= username %>">
   <form method="POST" action="/user/logout">
+    Loged in: <input readonly="true" name="logInUserName" value="<%= username %>">
     <input type="submit" value="Logout">
   </form>
   <% }
   else{ %>
-  <form method="POST" action="/user/login" type="text">
-    <input type="text" placeholder="Username" name="username">
-    <input type="submit" name="<% username %>" value="Login">
-  </form>
+  <table>
+    <td>
+      <form method="POST" action="/user/login">
+        <input type="text" placeholder="Username" name="username">
+        <input type="submit" value="Login">
+      </form>
+    </td>
+    <td>
+      <form method="GET" action="user/register">
+        If you don't have an account, click here!
+        <input type="submit" value="Register">
+      </form>
+    </td>
+  </table>
   <% } %>
 </header>
