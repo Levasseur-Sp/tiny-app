@@ -32,6 +32,7 @@ let urlDatabase = {
 // GET Requests
 app.get('/', (req, res) => {
   res.send('Hello!');
+  res.render('/partials/_footer');
 });
 
 app.get('/urls', (req, res) => {
@@ -46,7 +47,6 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.get('/urls/:id', (req, res) => {
-  console.log('Updating!!')
   res.render("urls_show", {
     shortURL: req.params.id,
     urls: urlDatabase,
@@ -67,23 +67,25 @@ app.post('/urls/', (req, res) => {
 });
 
 app.post('/urls/:id/delete', (req, res) => {
-  console.log('deleting')
   delete urlDatabase[req.params.id];
   res.redirect('/urls/');
 });
 
 app.post('/urls/:id/update', (req, res) => {
-  console.log('updating')
   urlDatabase[req.params.id] = req.body.longURL;
-  console.log(req.body.longURL);
   res.redirect('/urls/')
 });
 
-app.post('/login', (req, res) => {
+app.post('/user/login', (req, res) => {
   res.cookie('user_name', req.body.username);
-  res.render('site_login', {
+  res.render('user_login', {
     username: req.cookies["user_name"]
   });
+});
+
+app.post('/user/logout', (req, res) => {
+  res.clearCookie('user_name');
+  res.redirect(`/urls`);
 });
 
 // Surveying the express server
