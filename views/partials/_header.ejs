@@ -1,11 +1,10 @@
 <header>
-  <% if ( user_id ) {%>
+  <% if ( user_id ) { %>
   <form method="POST" action="/user/logout">
-    Loged in: <input readonly="true" name="logInUserName" value="<%= user_id.username %>">
+    Loged in: <input readonly="true" name="logInUserName" value="<%= user_id %>">
     <input type="submit" value="Logout">
   </form>
-  <% }
-  else{ %>
+  <% } else { %>
   <table>
     <td>
       <form method="GET" action="/user/login">

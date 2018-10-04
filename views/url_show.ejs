@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<% include partials/_head%>
+<% include partials/_head %>
 
 <body>
   <% include partials/_header %>
-  <form method="POST" action="/urls/<%= shortURL %>/update">
+  <form method="POST" action="/urls/<%= shortURL %>/edit">
     <table>
       <tr>
         <td>
@@ -15,10 +15,10 @@
       </tr>
       <tr>
         <td>
-          <input type="text" name="longURL" value="<%= urls[shortURL].longURL %>">
+          <input type="text" name="longURL" value="<%= urlDatabase[shortURL]['longURL'] %>">
         </td>
         <td>
-          <input id="<%= shortURL %>" name="<%= shortURL %>" type="submit" value="Update" />
+          <input id="<%= shortURL %>" name="<%= shortURL %>" type="submit" value="Edit" />
         </td>
       </tr>
     </table>

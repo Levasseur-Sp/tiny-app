@@ -27,15 +27,15 @@ function generateRandomString(lengthURL) {
 const urlDatabase = {
   "b2xVn2": {
     longURL: "http://www.lighthouselabs.ca",
-    urlOwner: "TinyAppBot"
+    owner: "TnyAppBot"
   },
   "9sm5xK": {
     longURL: "http://www.google.com",
-    urlOwner: "TinyAppBot"
+    owner: "TnyAppBot"
   },
   "i8Dut3": {
     longURL: "http://www.google.com",
-    urlOwner: "c6ioN2fe0"
+    owner: "c6ioN2fe0"
   }
 };
 
@@ -43,7 +43,7 @@ const users = {
   "TnyAppBot": {
     username: "TinyBot",
     email: "TinyAppBot@TinyApp.ca",
-    password: "12345qwertySuperSecure"
+    password: "k"
   },
   "c6ioN2fe0": {
     username: "Heretic Suzan",
@@ -54,14 +54,16 @@ const users = {
 
 // URLs functionnality
 app.get('/', (req, res) => {
-  res.send('Hello!');
+  res.send('Welcome to ~TinyApp~!');
   res.render('/partials/_footer');
 });
 
 app.get('/urls', (req, res) => {
+  console.log(req.cookies["user_id"]);
+
   res.render("urls_index", {
-    urls: urlDatabase,
-    user_id: users[req.cookies["user_id"]]
+    urlDatabase: urlDatabase,
+    user_id: req.cookies["user_id"]
   });
 });
 
@@ -72,28 +74,51 @@ app.post('/urls', (req, res) => {
 });
 
 app.get("/urls/new", (req, res) => {
-  res.render("url_new", {
-    urls: urlDatabase,
-    user_id: users[req.cookies["user_id"]]
-  });
+  if (req.cookies["user_id"]) {
+    res.render("url_new", {
+      urlDatabase: urlDatabase,
+      user_id: req.cookies["user_id"]
+    });
+  }
+  else {
+    // res.statusCode = 400; *Need additionnal step: login*
+    res.end('Need to have a TinyApp account to create a new tiny URL');
+  }
 });
 
 app.get('/urls/:id', (req, res) => {
-  res.render("url_show", {
-    shortURL: req.params.id,
-    urls: urlDatabase,
-    user_id: users[req.cookies["user_id"]]
-  });
+  if (req.cookies["user_id"] == urlDatabase[req.params.id]["owner"]) {
+    res.render("url_show", {
+      shortURL: req.params.id,
+      urlDatabase: urlDatabase,
+      user_id: req.cookies["user_id"]
+    });
+  } else {
+    // res.statusCode = 400;
+    res.end('Need to be the owner of this tiny url to see it\'s information')
+  }
 });
 
 app.post('/urls/:id/delete', (req, res) => {
-  delete urlDatabase[req.params.id];
-  res.redirect('/urls');
+  if (req.cookies["user_id"] == urlDatabase[req.params.id][owner]) {
+    delete urlDatabase[req.params.id];
+    res.redirect('/urls');
+  }
+  else {
+    // res.statusCode = 400;
+    res.end('Need to be the owner of this tiny url to delete it')
+  }
 });
 
-app.post('/urls/:id/update', (req, res) => {
-  urlDatabase[req.params.id].longURL = req.body.longURL;
-  res.redirect('/urls')
+app.post('/urls/:id/edit', (req, res) => {
+  if (req.cookies["user_id"] == urlDatabase[req.params.id].owner) {
+    urlDatabase[req.params.id].longURL = req.body.longURL;
+    res.redirect('/urls');
+  }
+  else {
+    // res.statusCode = 400;
+    res.end('Need to have be the owner of this tiny url to edit it')
+  }
 });
 
 // Accessing the longURL of the shortURL
