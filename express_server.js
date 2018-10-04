@@ -20,16 +20,26 @@ app.use(cookieSession({
 
 // URLs functionnality
 app.get('/', (req, res) => {
-  res.send('Welcome to ~TinyApp~!');
-  res.render('/partials/_footer');
+  if (req.session.user_id) {
+    return res.redirect("/urls");
+  }
+  else {
+    return res.redirect("/user/login");
+  }
 });
 
 app.get('/urls', (req, res) => {
-  res.render("urls_index", {
-    urlDatabase: db.urlDatabase,
-    users: db.users,
-    user_id: req.session.user_id
-  });
+  if (req.session.user_id) {
+    res.render("urls_index", {
+      urlDatabase: db.urlDatabase,
+      users: db.users,
+      user_id: req.session.user_id
+    });
+  }
+  else {
+    res.statusCode = 401;
+    return res.end('Need to have a TinyApp account to continue');
+  }
 });
 
 app.post('/urls', (req, res) => {
@@ -50,12 +60,19 @@ app.get("/urls/new", (req, res) => {
     });
   }
   else {
-    res.statusCode = 401;
-    return res.end('Need to have a TinyApp account to create a new tiny URL');
+    return res.redirect('/user/login');
   }
 });
 
 app.get('/urls/:id', (req, res) => {
+  if (!req.session.user_id) {
+    res.statusCode = 403;
+    return res.end('Need to be logged in');
+  }
+  if (!db.urlDatabase[req.params.id]) {
+    res.statusCode = 404;
+    return res.end('The given Tiny URL doesn\'t exist');
+  }
   if (req.session.user_id == db.urlDatabase[req.params.id]["owner"]) {
     res.render("url_show", {
       shortURL: req.params.id,
@@ -70,6 +87,10 @@ app.get('/urls/:id', (req, res) => {
 });
 
 app.post('/urls/:id/delete', (req, res) => {
+  if(!req.session.user_id){
+    res.statusCode = 403;
+    return res.end('Need to be logged in');
+  }
   if (req.session.user_id == db.urlDatabase[req.params.id]["owner"]) {
     delete db.urlDatabase[req.params.id];
     return res.redirect('/urls');
@@ -81,18 +102,26 @@ app.post('/urls/:id/delete', (req, res) => {
 });
 
 app.post('/urls/:id/edit', (req, res) => {
+  if(!req.session.user_id){
+    res.statusCode = 403;
+    return res.end('Need to be logged in');
+  }
   if (req.session.user_id == db.urlDatabase[req.params.id].owner) {
     db.urlDatabase[req.params.id].longURL = req.body.longURL;
     return res.redirect('/urls');
   }
   else {
     res.statusCode = 401;
-    return res.end('Need to have be the owner of this tiny url to edit it')
+    return res.end('Need to have be the owner of this tiny url to edit it');
   }
 });
 
 // Accessing the longURL of the shortURL
 app.get("/u/:shortURL", (req, res) => {
+  if(!db.urlDatabase[req.params.shortURL]){
+    res.statusCode = 404;
+    return res.end('This Tiny URL doesn\'t exist')
+  }
   let longURL = db.urlDatabase[req.params.shortURL].longURL;
   res.redirect(longURL);
 });
