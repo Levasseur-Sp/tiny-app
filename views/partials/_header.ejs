@@ -1,7 +1,7 @@
 <header>
   <% if ( user_id ) { %>
   <form method="POST" action="/user/logout">
-    Loged in: <input readonly="true" name="logInUserName" value="<%= users[user_id]['username'] %>">
+    Loged in: <input readonly="true" name="logInUserName" value="<%= users[user_id].username %>">
     <input type="submit" value="Logout">
   </form>
   <% } else { %>

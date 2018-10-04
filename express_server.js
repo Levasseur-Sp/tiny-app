@@ -51,7 +51,7 @@ app.get("/urls/new", (req, res) => {
   }
   else {
     res.statusCode = 401;
-    res.end('Need to have a TinyApp account to create a new tiny URL');
+    return res.end('Need to have a TinyApp account to create a new tiny URL');
   }
 });
 
@@ -65,29 +65,29 @@ app.get('/urls/:id', (req, res) => {
     });
   } else {
     res.statusCode = 401;
-    res.end('Need to be the owner of this tiny url to see it\'s information')
+    return res.end('Need to be the owner of this tiny url to see it\'s information')
   }
 });
 
 app.post('/urls/:id/delete', (req, res) => {
   if (req.session.user_id == db.urlDatabase[req.params.id]["owner"]) {
     delete db.urlDatabase[req.params.id];
-    res.redirect('/urls');
+    return res.redirect('/urls');
   }
   else {
     res.statusCode = 401;
-    res.end('Need to be the owner of this tiny url to delete it')
+    return res.end('Need to be the owner of this tiny url to delete it')
   }
 });
 
 app.post('/urls/:id/edit', (req, res) => {
   if (req.session.user_id == db.urlDatabase[req.params.id].owner) {
     db.urlDatabase[req.params.id].longURL = req.body.longURL;
-    res.redirect('/urls');
+    return res.redirect('/urls');
   }
   else {
     res.statusCode = 401;
-    res.end('Need to have be the owner of this tiny url to edit it')
+    return res.end('Need to have be the owner of this tiny url to edit it')
   }
 });
 
@@ -105,13 +105,13 @@ app.get("/user/register", (req, res) => {
 app.post('/user/register', (req, res) => {
   if (!req.body.email || !req.body.password || !req.body.username) {
     res.statusCode = 400;
-    res.end('Email, username or password missing for the registration');
+    return res.end('Email, username or password missing for the registration');
   }
   for (const user in db.users) {
     let email = db.users[user].email;
     if (req.body.email == email) {
       res.statusCode = 400;
-      res.end('The email is already associated with an account');
+      return res.end('The email is already associated with an account');
     }
   }
   let userId = randomId(9);
@@ -122,7 +122,7 @@ app.post('/user/register', (req, res) => {
     password: bcrypt.hashSync(req.body.password, 10)
   }
 
-  res.redirect('/urls');
+  return res.redirect('/urls');
 });
 
 app.get('/user/login', (req, res) => {
@@ -134,12 +134,12 @@ app.post('/user/login', (req, res) => {
     let email = db.users[user].email; let password = db.users[user].password;
     if (req.body.email == email && bcrypt.compareSync(req.body.password, password)) {
       req.session.user_id = user;
-      res.redirect('/urls');
+      return res.redirect('/urls');
     }
   }
   if (!req.session.user_id) {
     res.statusCode = 403;
-    res.end("Incorrect email or password");
+    return res.end("Incorrect email or password");
   }
 });
 
