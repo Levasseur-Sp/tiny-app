@@ -2,7 +2,7 @@
 const express = require('express');
 const bodyParser = require("body-parser");
 const cookieParser = require('cookie-parser');
-
+const bcrypt = require('bcrypt');
 
 const PORT = 8080;
 
@@ -43,12 +43,12 @@ const users = {
   "TnyAppBot": {
     username: "TinyBot",
     email: "TinyAppBot@TinyApp.ca",
-    password: "k"
+    password: "$2b$10$8Y6Icf1FZumKmYw1RuANYuHuW/UeiJfNGERb6uq1qodXIqItBUW1O"
   },
   "c6ioN2fe0": {
     username: "Heretic Suzan",
     email: "user2@example.com",
-    password: "dishwasher-funk"
+    password: "$2b$10$rV4MbE7KdgKj5jPYPUuEJOie9OBtlCuUZAzxLNOmI.yvupJ8mhJjS"
   }
 };
 
@@ -59,10 +59,9 @@ app.get('/', (req, res) => {
 });
 
 app.get('/urls', (req, res) => {
-  console.log(req.cookies["user_id"]);
-
   res.render("urls_index", {
     urlDatabase: urlDatabase,
+    users: users,
     user_id: req.cookies["user_id"]
   });
 });
@@ -81,7 +80,7 @@ app.get("/urls/new", (req, res) => {
     });
   }
   else {
-    // res.statusCode = 400; *Need additionnal step: login*
+    res.statusCode = 401;
     res.end('Need to have a TinyApp account to create a new tiny URL');
   }
 });
@@ -94,7 +93,7 @@ app.get('/urls/:id', (req, res) => {
       user_id: req.cookies["user_id"]
     });
   } else {
-    // res.statusCode = 400;
+    res.statusCode = 401;
     res.end('Need to be the owner of this tiny url to see it\'s information')
   }
 });
@@ -105,7 +104,7 @@ app.post('/urls/:id/delete', (req, res) => {
     res.redirect('/urls');
   }
   else {
-    // res.statusCode = 400;
+    res.statusCode = 401;
     res.end('Need to be the owner of this tiny url to delete it')
   }
 });
@@ -116,7 +115,7 @@ app.post('/urls/:id/edit', (req, res) => {
     res.redirect('/urls');
   }
   else {
-    // res.statusCode = 400;
+    res.statusCode = 401;
     res.end('Need to have be the owner of this tiny url to edit it')
   }
 });
@@ -137,7 +136,6 @@ app.post('/user/register', (req, res) => {
     res.statusCode = 400;
     res.end('Email, username or password missing for the registration');
   }
-
   for (const user in users) {
     let email = users[user].email;
     if (req.body.email == email) {
@@ -145,17 +143,13 @@ app.post('/user/register', (req, res) => {
       res.end('The email is already associated with an account');
     }
   }
-
-
   let userId = generateRandomString(9);
+  res.cookie('user_id', userId);
   users[userId] = {
     username: req.body.username,
     email: req.body.email,
-    password: req.body.password
+    password: bcrypt.hashSync(req.body.password, 10)
   }
-
-  res.cookie('user_id', userId);
-  // res.cookie('password', req.body.password, { secure: true });
 
   res.redirect('/urls');
 });
@@ -167,7 +161,7 @@ app.get('/user/login', (req, res) => {
 app.post('/user/login', (req, res) => {
   for (const user in users) {
     let email = users[user].email; let password = users[user].password;
-    if (req.body.email == email && req.body.password == password) {
+    if (req.body.email == email && bcrypt.compareSync(req.body.password, password)) {
       res.cookie('user_id', user);
       res.redirect('/urls');
     }
